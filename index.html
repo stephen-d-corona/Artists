@@ -59,7 +59,7 @@
 
 			function getArtists() {
 				var txtFile = new XMLHttpRequest();
-				txtFile.open("GET", "datat.tsv", true);
+				txtFile.open("GET", "https://docs.google.com/spreadsheets/d/e/2PACX-1vRaM_tiMsuIIEZlWaVhdCadZ9zreu3WxeOoMQ_hsB39qzb2DuoRjwrSfrbOnBO2oQsdcDreW4sG2-NQ/pub?output=tsv", true);
 				txtFile.onreadystatechange = function () {
 					if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
 						if (txtFile.status === 200) {  // Makes sure it's found the file.
