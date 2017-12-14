@@ -27,6 +27,8 @@
 			$scope.$watch('Artists', function () {
 				$scope.GenderIds = getUniquePropertyValue($scope.Artists, "GenderId");
 				$scope.Orientations = getUniquePropertyValue($scope.Artists, "SexualOrientation");
+				$scope.Races = getUniquePropertyValue($scope.Artists, "Race");
+				$scope.Ethnicities = getUniquePropertyValue($scope.Artists, "Ethnicity");
 			});
 
 			$scope.ShowArtist = function (artist) {
@@ -37,10 +39,19 @@
 				if ($scope.filteredOrientation != null && artist.SexualOrientation.toUpperCase() != $scope.filteredOrientation) {
 					return false;
 				}
+
+				if ($scope.filteredRace != null && artist.Race.toUpperCase() != $scope.filteredRace) {
+					return false;
+				}
+
+				if ($scope.filteredEthnicity != null && artist.Ethnicity.toUpperCase() != $scope.filteredEthnicity) {
+					return false;
+				}
+
 				return true;
 			}
 
-			$scope.ShowArtistModal = function(artist){
+			$scope.ShowArtistModal = function (artist) {
 				$('#modal').modal('show');
 				$scope.CurrentArtist = artist;
 				console.log("Current" + JSON.stringify($scope.CurrentArtist));
@@ -127,6 +138,17 @@
 						<option value="" selected>Select Sexual Orientation...</option>
 					</select>
 				</div>
+				<div class="col-md-3">
+					<select class="form-control" ng-model="filteredRace" ng-options="x for x in Races" aria-labelledby="dropdownMenu1">
+						<option value="" selected>Select Race...</option>
+					</select>
+				</div>
+				<div class="col-md-3">
+					<select class="form-control" ng-model="filteredEthnicity" ng-options="x for x in Ethnicities" aria-labelledby="dropdownMenu1">
+						<option value="" selected>Select Ethnicity...</option>
+					</select>
+				</div>
+				
 			</div>
 
 			<div class="col-lg-12" style="text-align:center;">
@@ -147,15 +169,27 @@
 							<h4 class="modal-title">{{CurrentArtist.Name}}</h4>
 						</div>
 						<div class="modal-body">
-							<p><img src="{{CurrentArtist.ArtistImg}}" style="width:200px;" /></p>
-							<p><label>GenderId:</label> {{CurrentArtist.GenderId}}</p>
-							<p><label>Media:</label> {{CurrentArtist.Media}}</p>
-							<p><label>Race:</label> {{CurrentArtist.Race}}</p>
-							<p><label>Ethnicity:</label> {{CurrentArtist.Ethnicity}}</p>
-							<p><label>Sexual Orientation:</label> {{CurrentArtist.SexualOrientation}}</p>
-							<p><label>Location:</label> {{CurrentArtist.Location}}</p>
-							<p><label>Other:</label> {{CurrentArtist.Other}}</p>							
-							<p><label>Link:</label> <a target="_blank" href="{{CurrentArtist.Link}}">{{CurrentArtist.Link}}</a></p>
+							<p>
+								<img src="{{CurrentArtist.ArtistImg}}" style="width:200px;" />
+							</p>
+							<p>
+								<label>GenderId:</label> {{CurrentArtist.GenderId}}</p>
+							<p>
+								<label>Media:</label> {{CurrentArtist.Media}}</p>
+							<p>
+								<label>Race:</label> {{CurrentArtist.Race}}</p>
+							<p>
+								<label>Ethnicity:</label> {{CurrentArtist.Ethnicity}}</p>
+							<p>
+								<label>Sexual Orientation:</label> {{CurrentArtist.SexualOrientation}}</p>
+							<p>
+								<label>Location:</label> {{CurrentArtist.Location}}</p>
+							<p>
+								<label>Other:</label> {{CurrentArtist.Other}}</p>
+							<p>
+								<label>Link:</label>
+								<a target="_blank" href="{{CurrentArtist.Link}}">{{CurrentArtist.Link}}</a>
+							</p>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
