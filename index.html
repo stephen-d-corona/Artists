@@ -14,24 +14,158 @@
 	<script src="vendor/jquery.min.js"></script>
 	<script src="vendor/bootstrap.min.js"></script>
 	<script src="vendor/angular.min.js"></script>
+	<script type="text/javascript" src="vendor/google-spreadsheet.js"></script>
 
 	<script type="text/javascript">
-		function Test() {
-			var ArtistApp = angular.module('ArtistApp', []);
 
-			var MainController = ArtistApp.controller('MainController', function ($scope) {
-				$scope.poop = "HEY";
+		var ArtistApp = angular.module('ArtistApp', []);
+
+		var MainController = ArtistApp.controller('MainController', function ($scope) {
+			$scope.Artists = [];
+
+
+			$scope.$watch('Artists', function () {
+				$scope.GenderIds = getUniquePropertyValue($scope.Artists, "GenderId");
+				$scope.Orientations = getUniquePropertyValue($scope.Artists, "SexualOrientation");
 			});
 
+			$scope.ShowArtist = function (artist) {
+				if ($scope.filteredGenderId != null && artist.GenderId.toUpperCase() != $scope.filteredGenderId) {
+					return false;
+				}
+
+				if ($scope.filteredOrientation != null && artist.SexualOrientation.toUpperCase() != $scope.filteredOrientation) {
+					return false;
+				}
+				return true;
+			}
+
+			$scope.ShowArtistModal = function(artist){
+				$('#modal').modal('show');
+				$scope.CurrentArtist = artist;
+				console.log("Current" + JSON.stringify($scope.CurrentArtist));
+			}
+
+			function getArtists() {
+				var txtFile = new XMLHttpRequest();
+				txtFile.open("GET", "datat.tsv", true);
+				txtFile.onreadystatechange = function () {
+					if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
+						if (txtFile.status === 200) {  // Makes sure it's found the file.
+							allText = txtFile.responseText;
+
+							var x = allText.split('\n');
+							x.splice(0, 1);
+							for (var i = 0; i < x.length; i++) {
+								y = x[i].split('\t');
+								x[i] = y;
+							}
+
+							var artists = [];
+
+							x.forEach(function (artist) {
+								artists.push(new Artist(artist));
+							});
+							$scope.Artists = artists;
+							$scope.$digest()
+						}
+					}
+				}
+
+				txtFile.send(null);
+			}
+
+			getArtists();
+		});
+
+		var Artist = function (x) {
+			this.Name = x[1];
+			this.Link = x[2];
+			this.Media = x[3];
+			this.Race = x[4];
+			this.Ethnicity = x[5];
+			this.GenderId = x[6];
+			this.SexualOrientation = x[7];
+			this.Location = x[12];
+			this.ArtistImg = x[13];
+			this.ArtworkImg = x[14];
+			this.Other = x[11];
+		};
+
+		function getUniquePropertyValue(objArray, prop) {
+			var values = [];
+			objArray.forEach(function (obj) {
+				values.push(obj[prop].toUpperCase());
+			});
+
+			return getUniqueArray(values);
 		}
 
-		Test();
+		function getUniqueArray(array) {
+			var result = [];
+			for (var x = 0; x < array.length; x++) {
+				if (result.indexOf(array[x]) == -1)
+					result.push(array[x]);
+			}
+			return result;
+		}
 
 	</script>
 
-	<div class="form-horizontal col-xs-12" style="padding-top: 30px" ng-app="ArtistApp">
-		<div class="col-xs-12" ng-controller="MainController">
-			<div class="btn btn-success">{{poop}}</div>
+	<div class="form-horizontal" style="padding-top: 30px" ng-app="ArtistApp">
+		<div class="col-lg-12" ng-controller="MainController" style="text-align: center">
+			<h1>Artists</h1>
+
+			<div class="form-group">
+				<div class="col-md-3">
+					<select class="form-control" ng-model="filteredGenderId" ng-options="x for x in GenderIds" aria-labelledby="dropdownMenu1">
+						<option value="" selected>Select GenderId...</option>
+					</select>
+				</div>
+				<div class="col-md-3">
+					<select class="form-control" ng-model="filteredOrientation" ng-options="x for x in Orientations" aria-labelledby="dropdownMenu1">
+						<option value="" selected>Select Sexual Orientation...</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="col-lg-12" style="text-align:center;">
+				<div ng-repeat="Artist in Artists | filter:ShowArtist" ng-click="ShowArtistModal(Artist)" class="col-sm-4 col-lg-2" style="border: 1px solid black; border-radius: 9px; cursor:pointer;">
+					<div ng-style="{'background-image':'url({{Artist.ArtistImg}})'}" style="background-position: center; background-repeat: no-repeat; min-height:320px; width: 100%; background-size:100%">
+						<h4 style="background-color:white">{{Artist.Name}}</h2>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<h4 class="modal-title">{{CurrentArtist.Name}}</h4>
+						</div>
+						<div class="modal-body">
+							<p><img src="{{CurrentArtist.ArtistImg}}" style="width:200px;" /></p>
+							<p><label>GenderId:</label> {{CurrentArtist.GenderId}}</p>
+							<p><label>Media:</label> {{CurrentArtist.Media}}</p>
+							<p><label>Race:</label> {{CurrentArtist.Race}}</p>
+							<p><label>Ethnicity:</label> {{CurrentArtist.Ethnicity}}</p>
+							<p><label>Sexual Orientation:</label> {{CurrentArtist.SexualOrientation}}</p>
+							<p><label>Location:</label> {{CurrentArtist.Location}}</p>
+							<p><label>Other:</label> {{CurrentArtist.Other}}</p>							
+							<p><label>Link:</label> <a target="_blank" href="{{CurrentArtist.Link}}">{{CurrentArtist.Link}}</a></p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+					<!-- /.modal-content -->
+				</div>
+				<!-- /.modal-dialog -->
+			</div>
+			<!-- /.modal -->
 		</div>
 	</div>
 </body>
