@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+
+	<link rel="stylesheet" href="vendor/bootstrap.min.css" />
+</head>
+
+<body>
+	<script src="vendor/jquery.min.js"></script>
+	<script src="vendor/bootstrap.min.js"></script>
+	<script src="vendor/angular.min.js"></script>
+
+	<script type="text/javascript">
+		function Test() {
+			var ArtistApp = angular.module('ArtistApp', []);
+
+			var MainController = ArtistApp.controller('MainController', function ($scope) {
+				$scope.poop = "HEY";
+			});
+
+		}
+
+		Test();
+
+	</script>
+
+	<div class="form-horizontal col-xs-12" style="padding-top: 30px" ng-app="ArtistApp">
+		<div class="col-xs-12" ng-controller="MainController">
+			<div class="btn btn-success">{{poop}}</div>
+		</div>
+	</div>
+</body>
+
+</html>
